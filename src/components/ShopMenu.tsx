@@ -14,7 +14,7 @@ const ShopMenu: React.FC<ShopMenuProps> = ({ playerData, onStart, onBuyUpgrade }
       <div className="shop-header">
         <img src="/assets/shopkeep.png" alt="Shopkeeper" className="shopkeeper-img" />
         <div className="shop-header-text">
-          <h1>DİLŞAD OYUN</h1>
+          <h1>DİLŞAD'IN İNDİRİM KOŞUSU</h1>
           <div className="coupon-balance">
             Kuponlar: <span className="highlight">{playerData.coupons}</span>
           </div>

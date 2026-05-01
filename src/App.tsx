@@ -72,7 +72,7 @@ function App() {
         <div className="game-over-screen">
           <img src="/assets/angel.png" alt="Angel Boyfriend" className="angel-img" />
           <h1>OYUN BİTTİ</h1>
-          <p>Sevgilin gelip seni kurtardı!</p>
+          <p>So sad so sad...</p>
           <div className="game-over-stats">
             <p>Mevcut Kuponlar: {playerData.coupons}</p>
             <p>En Yüksek Skor: {playerData.highScore}</p>
