@@ -1,6 +1,6 @@
 import { type PlayerData } from '../types';
 
-const STORAGE_KEY = 'dilsadoyun_save_data';
+const STORAGE_KEY = 'dilsadoyun_save_data_v2';
 
 const defaultData: PlayerData = {
   coupons: 0,
