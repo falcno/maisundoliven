@@ -39,7 +39,11 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       jumpPower: -12,
       isGrounded: false,
       isInvulnerable: false,
-      invulnerableTimer: 0
+      invulnerableTimer: 0,
+      frameCount: 6,
+      currentFrame: 0,
+      animationTimer: 0,
+      animationSpeed: 80
     },
     obstacles: [] as any[],
     collectibles: [] as any[],
@@ -131,8 +135,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
 
     // Load Images
     const loadImages = () => {
-      const imgSources = {
-        player: '/assets/dilsad_run.png',
+      const imgSources: Record<string, string> = {
+        playerSheet: '/assets/dilsad_run_sheet.png',
         car: '/assets/dilsad_car.png',
         book: '/assets/book.png',
         coupon: '/assets/coupon.png',
@@ -174,6 +178,17 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         state.player.y = state.groundY - state.player.height;
         state.player.vy = 0;
         state.player.isGrounded = true;
+      }
+
+      // Animation
+      if (state.player.isGrounded && !state.hasCar) {
+        state.player.animationTimer += deltaTime;
+        if (state.player.animationTimer >= state.player.animationSpeed) {
+          state.player.currentFrame = (state.player.currentFrame + 1) % state.player.frameCount;
+          state.player.animationTimer = 0;
+        }
+      } else {
+        state.player.currentFrame = 0; // Reset or use a jump frame if available
       }
 
       if (state.player.isInvulnerable) {
@@ -227,12 +242,28 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
 
       // Draw Player (Blinking if invulnerable)
       if (!state.player.isInvulnerable || Math.floor(time / 100) % 2 === 0) {
-        const playerImg = state.hasCar ? imagesRef.current['car'] : imagesRef.current['player'];
-        if (playerImg && playerImg.complete) {
-          ctx.drawImage(playerImg, state.player.x, state.player.y, state.player.width, state.player.height);
+        if (state.hasCar) {
+          const carImg = imagesRef.current['car'];
+          if (carImg && carImg.complete) {
+            ctx.drawImage(carImg, state.player.x, state.player.y, state.player.width, state.player.height);
+          } else {
+            ctx.fillStyle = '#1E90FF';
+            ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
+          }
         } else {
-          ctx.fillStyle = state.hasCar ? '#1E90FF' : '#FF69B4';
-          ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
+          const sheet = imagesRef.current['playerSheet'];
+          if (sheet && sheet.complete) {
+            const frameWidth = sheet.width / state.player.frameCount;
+            const frameHeight = sheet.height;
+            ctx.drawImage(
+              sheet,
+              state.player.currentFrame * frameWidth, 0, frameWidth, frameHeight,
+              state.player.x, state.player.y, state.player.width, state.player.height
+            );
+          } else {
+            ctx.fillStyle = '#FF69B4';
+            ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
+          }
         }
       }
 
