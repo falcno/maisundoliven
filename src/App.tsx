@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { GameState, PlayerData, UpgradeId } from './types';
+import { type GameState, type PlayerData, type UpgradeId } from './types';
 import { loadPlayerData, savePlayerData } from './utils/storage';
 import ShopMenu from './components/ShopMenu';
 import GameCanvas from './components/GameCanvas';

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { PlayerData, UPGRADES } from '../types';
+import { type PlayerData, UPGRADES } from '../types';
 import './GameCanvas.css';
 
 interface GameCanvasProps {
@@ -9,7 +9,7 @@ interface GameCanvasProps {
 
 const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const requestRef = useRef<number>();
+  const requestRef = useRef<number>(0);
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [coupons, setCoupons] = useState(0);

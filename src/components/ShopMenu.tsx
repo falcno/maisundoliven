@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlayerData, UPGRADES } from '../types';
+import { type PlayerData, UPGRADES } from '../types';
 import './ShopMenu.css';
 
 interface ShopMenuProps {

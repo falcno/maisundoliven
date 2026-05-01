@@ -1,4 +1,4 @@
-import { PlayerData } from '../types';
+import { type PlayerData } from '../types';
 
 const STORAGE_KEY = 'dilsadoyun_save_data';
 
