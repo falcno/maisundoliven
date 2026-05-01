@@ -15,7 +15,37 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
   const [coupons, setCoupons] = useState(0);
   
   // Image Cache
-  const imagesRef = useRef<Record<string, HTMLImageElement>>({});
+  const imagesRef = useRef<Record<string, HTMLCanvasElement | HTMLImageElement>>({});
+
+  // Sprite Cleaner Function
+  const cleanSprite = (image: HTMLImageElement): HTMLCanvasElement | HTMLImageElement => {
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = image.width;
+    tempCanvas.height = image.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (!tempCtx) return image;
+    
+    tempCtx.drawImage(image, 0, 0);
+    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const data = imageData.data;
+    
+    // Scan pixels for white/gray checkerboard colors
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      
+      const isWhite = r > 230 && g > 230 && b > 230;
+      const isGray = (r > 180 && r < 220) && (g > 180 && g < 220) && (b > 180 && b < 220);
+      
+      if (isWhite || isGray) {
+        data[i + 3] = 0; // Make transparent
+      }
+    }
+    
+    tempCtx.putImageData(imageData, 0, 0);
+    return tempCanvas;
+  };
 
   // Audio Context for simple sounds
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -148,7 +178,14 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       for (const [key, src] of Object.entries(imgSources)) {
         const img = new Image();
         img.src = src;
-        imagesRef.current[key] = img;
+        img.onload = () => {
+          // Clean sprites that might have checkerboard backgrounds
+          if (['playerSheet', 'car', 'book'].includes(key)) {
+            imagesRef.current[key] = cleanSprite(img);
+          } else {
+            imagesRef.current[key] = img;
+          }
+        };
       }
     };
     loadImages();
@@ -228,7 +265,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       
       const bgImgKey = state.level === 1 ? 'bg1' : state.level === 2 ? 'bg2' : state.level === 3 ? 'bg3' : 'bg4';
       const bgImg = imagesRef.current[bgImgKey];
-      if (bgImg && bgImg.complete) {
+      if (bgImg) {
         ctx.drawImage(bgImg, state.bgOffset, 0, canvas.width, canvas.height);
         ctx.drawImage(bgImg, state.bgOffset + canvas.width, 0, canvas.width, canvas.height);
       } else {
@@ -242,17 +279,12 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
 
       // Draw Player (Blinking if invulnerable)
       if (!state.player.isInvulnerable || Math.floor(time / 100) % 2 === 0) {
-        if (state.hasCar) {
-          const carImg = imagesRef.current['car'];
-          if (carImg && carImg.complete) {
-            ctx.drawImage(carImg, state.player.x, state.player.y, state.player.width, state.player.height);
+        const playerImg = state.hasCar ? imagesRef.current['car'] : imagesRef.current['playerSheet'];
+        if (playerImg) {
+          if (state.hasCar) {
+            ctx.drawImage(playerImg, state.player.x, state.player.y, state.player.width, state.player.height);
           } else {
-            ctx.fillStyle = '#1E90FF';
-            ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
-          }
-        } else {
-          const sheet = imagesRef.current['playerSheet'];
-          if (sheet && sheet.complete) {
+            const sheet = playerImg as HTMLCanvasElement;
             const frameWidth = sheet.width / state.player.frameCount;
             const frameHeight = sheet.height;
             ctx.drawImage(
@@ -260,11 +292,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
               state.player.currentFrame * frameWidth, 0, frameWidth, frameHeight,
               state.player.x, state.player.y, state.player.width, state.player.height
             );
-          } else {
-            ctx.fillStyle = '#FF69B4';
-            ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
           }
-        }
+        } else {
       }
 
       // Update and Draw Obstacles
@@ -273,7 +302,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         obs.x -= state.speed;
 
         const bookImg = imagesRef.current['book'];
-        if (bookImg && bookImg.complete) {
+        if (bookImg) {
           ctx.drawImage(bookImg, obs.x, obs.y, obs.width, obs.height);
         } else {
           ctx.fillStyle = '#FF4500';
@@ -312,7 +341,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         col.x -= state.speed;
 
         const couponImg = imagesRef.current['coupon'];
-        if (couponImg && couponImg.complete) {
+        if (couponImg) {
           ctx.drawImage(couponImg, col.x, col.y, col.width, col.height);
         } else {
           ctx.fillStyle = '#FFD700';
