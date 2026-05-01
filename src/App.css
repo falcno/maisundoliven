@@ -1,0 +1,87 @@
+.app-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.pixel-btn {
+  font-family: 'Press Start 2P', cursive;
+  background-color: var(--accent-color);
+  color: white;
+  border: 4px solid white;
+  padding: 15px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.1s, background-color 0.2s;
+  text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+  box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+  margin-top: 10px;
+}
+
+.pixel-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.pixel-btn:disabled {
+  background-color: #555;
+  border-color: #777;
+  color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.game-over-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 40px;
+  border: 4px solid var(--accent-color);
+  border-radius: 8px;
+  z-index: 100;
+  width: 90%;
+  max-width: 500px;
+}
+
+.angel-img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  animation: floatDown 2s ease-out;
+}
+
+@keyframes floatDown {
+  0% { transform: translateY(-100px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.game-over-screen h1 {
+  color: var(--accent-color);
+  font-size: 24px;
+  line-height: 1.5;
+  text-shadow: 2px 2px 0px #000;
+}
+
+.game-over-screen p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.game-over-stats {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border: 2px solid #555;
+}

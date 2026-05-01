@@ -1,0 +1,153 @@
+.shop-menu {
+  width: 90%;
+  max-width: 600px;
+  background-color: rgba(15, 52, 96, 0.9);
+  border: 4px solid var(--accent-color);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  border-bottom: 4px dashed var(--accent-color);
+  padding-bottom: 20px;
+}
+
+.shopkeeper-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 4px solid white;
+  border-radius: 50%;
+  background-color: #0f3460;
+}
+
+.shop-header-text {
+  text-align: left;
+}
+
+.shop-header-text h1 {
+  font-size: 28px;
+  color: white;
+  text-shadow: 3px 3px 0px var(--accent-color);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.coupon-balance {
+  font-size: 16px;
+  background: rgba(0,0,0,0.5);
+  display: inline-block;
+  padding: 10px 15px;
+  border: 2px solid white;
+}
+
+.highlight {
+  color: #ffd700;
+}
+
+.shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.4);
+  border: 2px solid #555;
+  padding: 15px;
+  transition: border-color 0.2s;
+}
+
+.shop-item:hover {
+  border-color: white;
+}
+
+.shop-item.purchased {
+  border-color: #4CAF50;
+  opacity: 0.8;
+}
+
+.item-info h3 {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.item-info p {
+  font-size: 10px;
+  color: #aaa;
+  line-height: 1.4;
+}
+
+.buy-btn {
+  font-family: 'Press Start 2P', cursive;
+  background-color: var(--primary-color);
+  color: white;
+  border: 2px solid white;
+  padding: 10px;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.buy-btn:disabled {
+  background-color: #333;
+  color: #777;
+  border-color: #555;
+  cursor: not-allowed;
+}
+
+.purchased-badge {
+  font-size: 10px;
+  color: #4CAF50;
+  border: 2px solid #4CAF50;
+  padding: 10px;
+}
+
+.start-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.start-btn {
+  font-size: 18px;
+  padding: 20px 40px;
+  background-color: #4CAF50;
+  animation: pulse 1.5s infinite;
+}
+
+.high-score {
+  font-size: 12px;
+  color: #aaa;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 480px) {
+  .shop-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .buy-btn, .purchased-badge {
+    align-self: flex-end;
+  }
+}
