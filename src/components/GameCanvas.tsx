@@ -294,6 +294,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
             );
           }
         } else {
+          ctx.fillStyle = state.hasCar ? '#1E90FF' : '#FF69B4';
+          ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
+        }
       }
 
       // Update and Draw Obstacles
