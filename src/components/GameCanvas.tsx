@@ -288,9 +288,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
           player.style.display = 'none';
         } else {
           player.style.display = 'block';
-          // Sync position with logic, adding a slight 2px sink to ensure it doesn't look like it's floating
+          // Sync position with logic, adding a larger offset to ensure it touches the ground
           player.style.left = `${state.player.x + shakeX}px`;
-          player.style.top = `${state.player.y + shakeY + 2}px`; 
+          player.style.top = `${state.player.y + shakeY + 10}px`; 
           player.style.width = `${state.player.width}px`;
           player.style.height = `${state.player.height}px`;
           
