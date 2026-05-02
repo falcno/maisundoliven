@@ -105,11 +105,13 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      gameStateRef.current.groundY = canvas.height - 100;
-      
+      const scale = canvas.height / 500;
       if (gameStateRef.current.hasCar) {
-        gameStateRef.current.player.width = 110;
-        gameStateRef.current.player.height = 55;
+        gameStateRef.current.player.width = 110 * scale;
+        gameStateRef.current.player.height = 55 * scale;
+      } else {
+        gameStateRef.current.player.width = 50 * scale;
+        gameStateRef.current.player.height = 75 * scale;
       }
     };
     
@@ -119,7 +121,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     const jump = () => {
       const state = gameStateRef.current;
       if (state.player.isGrounded) {
-        state.player.vy = state.player.jumpPower;
+        const scale = canvas.height / 500;
+        state.player.vy = state.player.jumpPower * scale;
         state.player.isGrounded = false;
         playSound('jump');
       }
@@ -169,6 +172,10 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       const deltaTime = time - lastTime;
       lastTime = time;
       const state = gameStateRef.current;
+      
+      // Speed Normalization (Target 60fps)
+      const speedFactor = Math.min(deltaTime / 16.6, 3); // Cap factor to avoid huge jumps
+      const scale = canvas.height / 500; // Base scaling factor
 
       state.score += deltaTime * 0.01;
       setScore(Math.floor(state.score));
@@ -177,10 +184,10 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       else if (state.score > 600) state.level = 3;
       else if (state.score > 300) state.level = 2;
 
-      state.speed = 5 + (state.score / 200);
+      state.speed = (5 + (state.score / 200)) * scale;
 
-      state.player.vy += state.player.gravity;
-      state.player.y += state.player.vy;
+      state.player.vy += state.player.gravity * scale * speedFactor;
+      state.player.y += state.player.vy * speedFactor;
 
       if (state.player.y + state.player.height >= state.groundY) {
         state.player.y = state.groundY - state.player.height;
@@ -196,7 +203,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
           state.player.animationTimer = 0;
         }
       } else {
-        state.player.currentFrame = 0; // Reset or use a jump frame if available
+        state.player.currentFrame = 0; 
       }
 
       // Update Shake
@@ -208,9 +215,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       // Update Particles
       for (let i = state.particles.length - 1; i >= 0; i--) {
         const p = state.particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.02;
+        p.x += p.vx * speedFactor;
+        p.y += p.vy * speedFactor;
+        p.life -= 0.02 * speedFactor;
         if (p.life <= 0) state.particles.splice(i, 1);
       }
 
@@ -223,21 +230,23 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
 
       if (time - state.lastObstacleTime > Math.random() * 2000 + 1000) {
         const isFlying = Math.random() > 0.5;
+        const obsSize = 40 * scale;
         state.obstacles.push({
           x: canvas.width,
-          y: isFlying ? state.groundY - 140 - Math.random() * 40 : state.groundY - 40,
-          width: 40,
-          height: 40
+          y: isFlying ? state.groundY - 140 * scale - Math.random() * 40 * scale : state.groundY - obsSize,
+          width: obsSize,
+          height: obsSize
         });
         state.lastObstacleTime = time;
       }
 
       if (time - state.lastCollectibleTime > Math.random() * 3000 + 2000) {
+        const colSize = 35 * scale;
         state.collectibles.push({
           x: canvas.width,
-          y: state.groundY - 80 - Math.random() * 80,
-          width: 35,
-          height: 35,
+          y: state.groundY - 80 * scale - Math.random() * 80 * scale,
+          width: colSize,
+          height: colSize,
           collected: false
         });
         state.lastCollectibleTime = time;
@@ -251,7 +260,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       ctx.translate(shakeX, shakeY);
 
       // Draw Background based on level
-      state.bgOffset -= state.speed * 0.5;
+      state.bgOffset -= state.speed * 0.5 * speedFactor;
       if (state.bgOffset <= -canvas.width) state.bgOffset = 0;
       
       const bgImgKey = state.level === 1 ? 'bg1' : state.level === 2 ? 'bg2' : state.level === 3 ? 'bg3' : 'bg4';
@@ -284,7 +293,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       // Update and Draw Obstacles
       for (let i = state.obstacles.length - 1; i >= 0; i--) {
         const obs = state.obstacles[i];
-        obs.x -= state.speed;
+        obs.x -= state.speed * speedFactor;
 
         const bookImg = imagesRef.current['book'];
         if (bookImg) {
@@ -324,7 +333,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         const col = state.collectibles[i];
         if (col.collected) continue;
         
-        col.x -= state.speed;
+        col.x -= state.speed * speedFactor;
 
         const couponImg = imagesRef.current['coupon'];
         if (couponImg) {
