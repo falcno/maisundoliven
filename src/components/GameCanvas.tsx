@@ -15,37 +15,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
   const [coupons, setCoupons] = useState(0);
   
   // Image Cache
-  const imagesRef = useRef<Record<string, HTMLCanvasElement | HTMLImageElement>>({});
+  const imagesRef = useRef<Record<string, HTMLImageElement>>({});
 
-  // Sprite Cleaner Function
-  const cleanSprite = (image: HTMLImageElement): HTMLCanvasElement | HTMLImageElement => {
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = image.width;
-    tempCanvas.height = image.height;
-    const tempCtx = tempCanvas.getContext('2d');
-    if (!tempCtx) return image;
-    
-    tempCtx.drawImage(image, 0, 0);
-    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-    const data = imageData.data;
-    
-    // Scan pixels for white/gray checkerboard colors
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      
-      const isWhite = r > 230 && g > 230 && b > 230;
-      const isGray = (r > 180 && r < 220) && (g > 180 && g < 220) && (b > 180 && b < 220);
-      
-      if (isWhite || isGray) {
-        data[i + 3] = 0; // Make transparent
-      }
-    }
-    
-    tempCtx.putImageData(imageData, 0, 0);
-    return tempCanvas;
-  };
+  // Audio Context for simple sounds
 
   // Audio Context for simple sounds
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -79,7 +51,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     collectibles: [] as any[],
     lastObstacleTime: 0,
     lastCollectibleTime: 0,
-    groundY: 300
+    groundY: 300,
+    shake: 0,
+    particles: [] as any[]
   });
 
   const playSound = (type: 'jump' | 'hit' | 'coin') => {
@@ -179,13 +153,10 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         const img = new Image();
         img.src = src;
         img.onload = () => {
-          // Clean sprites that might have checkerboard backgrounds
-          if (['player', 'car', 'book'].includes(key)) {
-            imagesRef.current[key] = cleanSprite(img);
-          } else {
-            imagesRef.current[key] = img;
-          }
+          imagesRef.current[key] = img;
+          console.log(`Loaded: ${key}`);
         };
+        img.onerror = () => console.error(`Failed to load: ${key}`);
       }
     };
     loadImages();
@@ -228,6 +199,21 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         state.player.currentFrame = 0; // Reset or use a jump frame if available
       }
 
+      // Update Shake
+      if (state.shake > 0) {
+        state.shake *= 0.9;
+        if (state.shake < 0.1) state.shake = 0;
+      }
+
+      // Update Particles
+      for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.02;
+        if (p.life <= 0) state.particles.splice(i, 1);
+      }
+
       if (state.player.isInvulnerable) {
         state.player.invulnerableTimer -= deltaTime;
         if (state.player.invulnerableTimer <= 0) {
@@ -258,6 +244,11 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const shakeX = (Math.random() - 0.5) * state.shake;
+      const shakeY = (Math.random() - 0.5) * state.shake;
+      ctx.save();
+      ctx.translate(shakeX, shakeY);
 
       // Draw Background based on level
       state.bgOffset -= state.speed * 0.5;
@@ -309,6 +300,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
           
           playSound('hit');
           state.lives -= 1;
+          state.shake = 10;
           
           if (state.lives <= 0) {
             setIsGameOver(true);
@@ -351,12 +343,34 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
           col.collected = true;
           state.coupons += 10;
           setCoupons(state.coupons);
+
+          // Spawn particles
+          for (let j = 0; j < 8; j++) {
+            state.particles.push({
+              x: col.x + col.width/2,
+              y: col.y + col.height/2,
+              vx: (Math.random() - 0.5) * 10,
+              vy: (Math.random() - 0.5) * 10,
+              life: 1.0,
+              color: '#FFD700'
+            });
+          }
         }
 
         if (col.x + col.width < 0 || col.collected) {
           state.collectibles.splice(i, 1);
         }
       }
+
+      // Draw Particles
+      for (const p of state.particles) {
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 4, 4);
+      }
+      ctx.globalAlpha = 1.0;
+
+      ctx.restore();
 
       requestRef.current = requestAnimationFrame(gameLoop);
     };
