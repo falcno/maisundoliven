@@ -28,6 +28,7 @@ const ShopMenu: React.FC<ShopMenuProps> = ({ playerData, onStart, onBuyUpgrade }
 
           return (
             <div key={upgrade.id} className={`shop-item ${isPurchased ? 'purchased' : ''}`}>
+              <img src={upgrade.image} alt={upgrade.name} className="item-icon" />
               <div className="item-info">
                 <h3>{upgrade.name}</h3>
                 <p>{upgrade.description}</p>

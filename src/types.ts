@@ -7,6 +7,7 @@ export interface Upgrade {
   name: string;
   cost: number;
   description: string;
+  image: string;
   grantsExtraLife: boolean;
   grantsCarSprite: boolean;
 }
@@ -17,6 +18,7 @@ export const UPGRADES: Record<UpgradeId, Upgrade> = {
     name: 'Şakayık Buketi',
     cost: 50,
     description: '+1 Can',
+    image: '/assets/sakayik.png',
     grantsExtraLife: true,
     grantsCarSprite: false,
   },
@@ -25,6 +27,7 @@ export const UPGRADES: Record<UpgradeId, Upgrade> = {
     name: 'Bayramoğlu Döner',
     cost: 100,
     description: '+1 Can',
+    image: '/assets/doner.png',
     grantsExtraLife: true,
     grantsCarSprite: false,
   },
@@ -33,6 +36,7 @@ export const UPGRADES: Record<UpgradeId, Upgrade> = {
     name: 'Zara Larsson Bileti',
     cost: 150,
     description: '+1 Can',
+    image: '/assets/zara.png',
     grantsExtraLife: true,
     grantsCarSprite: false,
   },
@@ -41,6 +45,7 @@ export const UPGRADES: Record<UpgradeId, Upgrade> = {
     name: 'Mavi Suzuki Swift',
     cost: 300,
     description: '+1 Can ve Araç Görünümü',
+    image: '/assets/suzuki_icon.png',
     grantsExtraLife: true,
     grantsCarSprite: true,
   }
