@@ -56,17 +56,17 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     hasCar: playerData.purchasedUpgrades.includes('araba'),
     score: 0,
     coupons: 0,
-    speed: 5,
+    speed: 4,
     bgOffset: 0,
     level: 1,
     player: {
       x: 50,
       y: 200,
-      width: 40,
-      height: 60,
+      width: 60,
+      height: 90,
       vy: 0,
-      gravity: 0.6,
-      jumpPower: -12,
+      gravity: 0.4,
+      jumpPower: -10,
       isGrounded: false,
       isInvulnerable: false,
       invulnerableTimer: 0,
@@ -134,8 +134,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       gameStateRef.current.groundY = canvas.height - 100;
       
       if (gameStateRef.current.hasCar) {
-        gameStateRef.current.player.width = 80;
-        gameStateRef.current.player.height = 40;
+        gameStateRef.current.player.width = 120;
+        gameStateRef.current.player.height = 60;
       }
     };
     
@@ -239,9 +239,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         const isFlying = Math.random() > 0.5;
         state.obstacles.push({
           x: canvas.width,
-          y: isFlying ? state.groundY - 100 - Math.random() * 50 : state.groundY - 30,
-          width: 30,
-          height: 30
+          y: isFlying ? state.groundY - 120 - Math.random() * 50 : state.groundY - 50,
+          width: 50,
+          height: 50
         });
         state.lastObstacleTime = time;
       }
@@ -249,9 +249,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       if (time - state.lastCollectibleTime > Math.random() * 3000 + 2000) {
         state.collectibles.push({
           x: canvas.width,
-          y: state.groundY - 50 - Math.random() * 100,
-          width: 25,
-          height: 25,
+          y: state.groundY - 70 - Math.random() * 100,
+          width: 40,
+          height: 40,
           collected: false
         });
         state.lastCollectibleTime = time;
