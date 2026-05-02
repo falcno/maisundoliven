@@ -34,8 +34,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     player: {
       x: 50,
       y: 200,
-      width: 60,
-      height: 90,
+      width: 50,
+      height: 75,
       vy: 0,
       gravity: 0.4,
       jumpPower: -10,
@@ -108,8 +108,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       gameStateRef.current.groundY = canvas.height - 100;
       
       if (gameStateRef.current.hasCar) {
-        gameStateRef.current.player.width = 120;
-        gameStateRef.current.player.height = 60;
+        gameStateRef.current.player.width = 110;
+        gameStateRef.current.player.height = 55;
       }
     };
     
@@ -225,9 +225,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         const isFlying = Math.random() > 0.5;
         state.obstacles.push({
           x: canvas.width,
-          y: isFlying ? state.groundY - 120 - Math.random() * 50 : state.groundY - 50,
-          width: 50,
-          height: 50
+          y: isFlying ? state.groundY - 140 - Math.random() * 40 : state.groundY - 40,
+          width: 40,
+          height: 40
         });
         state.lastObstacleTime = time;
       }
@@ -235,9 +235,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       if (time - state.lastCollectibleTime > Math.random() * 3000 + 2000) {
         state.collectibles.push({
           x: canvas.width,
-          y: state.groundY - 70 - Math.random() * 100,
-          width: 40,
-          height: 40,
+          y: state.groundY - 80 - Math.random() * 80,
+          width: 35,
+          height: 35,
           collected: false
         });
         state.lastCollectibleTime = time;
@@ -272,7 +272,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       if (!state.player.isInvulnerable || Math.floor(time / 100) % 2 === 0) {
         const playerImg = state.hasCar ? imagesRef.current['car'] : imagesRef.current['player'];
         if (playerImg) {
-          ctx.drawImage(playerImg, state.player.x, state.player.y, state.player.width, state.player.height);
+          // Add a small 2px offset if it's a car to ensure it touches the ground
+          const yOffset = state.hasCar ? 2 : 0;
+          ctx.drawImage(playerImg, state.player.x, state.player.y + yOffset, state.player.width, state.player.height);
         } else {
           ctx.fillStyle = state.hasCar ? '#1E90FF' : '#FF69B4';
           ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
