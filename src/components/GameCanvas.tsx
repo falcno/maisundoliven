@@ -47,11 +47,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       animationTimer: 0,
       animationSpeed: 80
     },
-    obstacles: [] as any[],
-    collectibles: [] as any[],
-    lastObstacleTime: 0,
-    lastCollectibleTime: 0,
-    groundY: 300,
+    groundY: window.innerHeight * 0.8,
     shake: 0,
     particles: [] as any[]
   });
@@ -105,13 +101,16 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      const scale = canvas.height / 500;
+      
+      const scale = Math.min(canvas.height / 800, 1.2); // Cap the scale
+      gameStateRef.current.groundY = canvas.height * 0.85; // Ground is always at bottom 15%
+      
       if (gameStateRef.current.hasCar) {
         gameStateRef.current.player.width = 110 * scale;
         gameStateRef.current.player.height = 55 * scale;
       } else {
-        gameStateRef.current.player.width = 50 * scale;
-        gameStateRef.current.player.height = 75 * scale;
+        gameStateRef.current.player.width = 40 * scale;
+        gameStateRef.current.player.height = 65 * scale;
       }
     };
     
@@ -121,7 +120,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     const jump = () => {
       const state = gameStateRef.current;
       if (state.player.isGrounded) {
-        const scale = canvas.height / 500;
+        const scale = Math.min(canvas.height / 800, 1.2);
         state.player.vy = state.player.jumpPower * scale;
         state.player.isGrounded = false;
         playSound('jump');
@@ -174,8 +173,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       const state = gameStateRef.current;
       
       // Speed Normalization (Target 60fps)
-      const speedFactor = Math.min(deltaTime / 16.6, 3); // Cap factor to avoid huge jumps
-      const scale = canvas.height / 500; // Base scaling factor
+      const speedFactor = Math.min(deltaTime / 16.6, 3);
+      const scale = Math.min(canvas.height / 800, 1.2);
 
       state.score += deltaTime * 0.01;
       setScore(Math.floor(state.score));
