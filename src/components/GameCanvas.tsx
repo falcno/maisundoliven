@@ -288,9 +288,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
           player.style.display = 'none';
         } else {
           player.style.display = 'block';
-          // Sync position with logic, adding a larger offset to ensure it touches the ground
+          // Sync position with logic, adding a much larger offset (+40) because the GIF seems to have a lot of empty space
           player.style.left = `${state.player.x + shakeX}px`;
-          player.style.top = `${state.player.y + shakeY + 10}px`; 
+          player.style.top = `${state.player.y + shakeY + 40}px`; 
           player.style.width = `${state.player.width}px`;
           player.style.height = `${state.player.height}px`;
           
