@@ -47,6 +47,10 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       animationTimer: 0,
       animationSpeed: 80
     },
+    obstacles: [] as any[],
+    collectibles: [] as any[],
+    lastObstacleTime: 0,
+    lastCollectibleTime: 0,
     groundY: window.innerHeight * 0.8,
     shake: 0,
     particles: [] as any[]
