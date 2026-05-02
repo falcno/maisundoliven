@@ -9,6 +9,7 @@ interface GameCanvasProps {
 
 const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const playerImgRef = useRef<HTMLImageElement>(null);
   const requestRef = useRef<number>(0);
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
@@ -146,7 +147,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     // Load Images
     const loadImages = () => {
       const imgSources: Record<string, string> = {
-        player: '/assets/dilsad_run.png',
+        player: '/assets/dilsad_run.gif',
         car: '/assets/dilsad_car.png',
         book: '/assets/book.png',
         coupon: '/assets/coupon.png',
@@ -280,15 +281,31 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       ctx.fillStyle = '#654321';
       ctx.fillRect(0, state.groundY, canvas.width, canvas.height - state.groundY);
 
-      // Draw Player (Blinking if invulnerable)
-      if (!state.player.isInvulnerable || Math.floor(time / 100) % 2 === 0) {
-        const playerImg = state.hasCar ? imagesRef.current['car'] : imagesRef.current['player'];
-        if (playerImg) {
-          // Add a small 2px offset if it's a car to ensure it touches the ground
-          const yOffset = state.hasCar ? 2 : 0;
-          ctx.drawImage(playerImg, state.player.x, state.player.y + yOffset, state.player.width, state.player.height);
+      // Update Player Image Element (GIF support)
+      if (playerImgRef.current) {
+        const player = playerImgRef.current;
+        if (state.hasCar) {
+          player.style.display = 'none';
         } else {
-          ctx.fillStyle = state.hasCar ? '#1E90FF' : '#FF69B4';
+          player.style.display = 'block';
+          player.style.left = `${state.player.x + shakeX}px`;
+          player.style.top = `${state.player.y + shakeY}px`;
+          player.style.width = `${state.player.width}px`;
+          player.style.height = `${state.player.height}px`;
+          
+          // Blinking if invulnerable
+          const isVisible = !state.player.isInvulnerable || Math.floor(time / 100) % 2 === 0;
+          player.style.opacity = isVisible ? '1' : '0';
+        }
+      }
+
+      // Draw Player (Only if in Car mode, GIF is handled by overlay)
+      if (state.hasCar && (!state.player.isInvulnerable || Math.floor(time / 100) % 2 === 0)) {
+        const carImg = imagesRef.current['car'];
+        if (carImg) {
+          ctx.drawImage(carImg, state.player.x, state.player.y + 2, state.player.width, state.player.height);
+        } else {
+          ctx.fillStyle = '#1E90FF';
           ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
         }
       }
@@ -408,6 +425,13 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         <div className="hud-item">Skor: {score}</div>
       </div>
       <canvas ref={canvasRef} className="game-canvas" />
+      <img 
+        ref={playerImgRef} 
+        src="/assets/dilsad_run.gif" 
+        alt="Player" 
+        className="player-gif-overlay"
+        style={{ position: 'absolute', pointerEvents: 'none' }}
+      />
     </div>
   );
 };
