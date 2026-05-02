@@ -1,3 +1,4 @@
+// Dilşad'ın İndirim Koşusu - Ana Uygulama
 import { useState, useEffect } from 'react';
 import { type GameState, type PlayerData, type UpgradeId } from './types';
 import { loadPlayerData, savePlayerData } from './utils/storage';
