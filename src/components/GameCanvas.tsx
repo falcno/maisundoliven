@@ -107,15 +107,15 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       
-      const scale = Math.min(canvas.height / 800, 1.2); // Cap the scale
-      gameStateRef.current.groundY = canvas.height * 0.85; // Ground is always at bottom 15%
+      const scale = Math.min(canvas.height / 750, 1.1); // Slightly tighter scale
+      gameStateRef.current.groundY = canvas.height * 0.82; // Ground at 82% height
       
       if (gameStateRef.current.hasCar) {
-        gameStateRef.current.player.width = 110 * scale;
-        gameStateRef.current.player.height = 55 * scale;
+        gameStateRef.current.player.width = 100 * scale;
+        gameStateRef.current.player.height = 50 * scale;
       } else {
-        gameStateRef.current.player.width = 40 * scale;
-        gameStateRef.current.player.height = 65 * scale;
+        gameStateRef.current.player.width = 45 * scale;
+        gameStateRef.current.player.height = 70 * scale;
       }
     };
     
@@ -288,8 +288,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
           player.style.display = 'none';
         } else {
           player.style.display = 'block';
+          // Sync position with logic, adding a slight 2px sink to ensure it doesn't look like it's floating
           player.style.left = `${state.player.x + shakeX}px`;
-          player.style.top = `${state.player.y + shakeY}px`;
+          player.style.top = `${state.player.y + shakeY + 2}px`; 
           player.style.width = `${state.player.width}px`;
           player.style.height = `${state.player.height}px`;
           
