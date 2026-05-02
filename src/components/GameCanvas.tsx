@@ -166,7 +166,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
     // Load Images
     const loadImages = () => {
       const imgSources: Record<string, string> = {
-        playerSheet: '/assets/dilsad_run_sheet.png',
+        player: '/assets/dilsad_run.png',
         car: '/assets/dilsad_car.png',
         book: '/assets/book.png',
         coupon: '/assets/coupon.png',
@@ -180,7 +180,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
         img.src = src;
         img.onload = () => {
           // Clean sprites that might have checkerboard backgrounds
-          if (['playerSheet', 'car', 'book'].includes(key)) {
+          if (['player', 'car', 'book'].includes(key)) {
             imagesRef.current[key] = cleanSprite(img);
           } else {
             imagesRef.current[key] = img;
@@ -279,20 +279,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ playerData, onGameOver }) => {
 
       // Draw Player (Blinking if invulnerable)
       if (!state.player.isInvulnerable || Math.floor(time / 100) % 2 === 0) {
-        const playerImg = state.hasCar ? imagesRef.current['car'] : imagesRef.current['playerSheet'];
+        const playerImg = state.hasCar ? imagesRef.current['car'] : imagesRef.current['player'];
         if (playerImg) {
-          if (state.hasCar) {
-            ctx.drawImage(playerImg, state.player.x, state.player.y, state.player.width, state.player.height);
-          } else {
-            const sheet = playerImg as HTMLCanvasElement;
-            const frameWidth = sheet.width / state.player.frameCount;
-            const frameHeight = sheet.height;
-            ctx.drawImage(
-              sheet,
-              state.player.currentFrame * frameWidth, 0, frameWidth, frameHeight,
-              state.player.x, state.player.y, state.player.width, state.player.height
-            );
-          }
+          ctx.drawImage(playerImg, state.player.x, state.player.y, state.player.width, state.player.height);
         } else {
           ctx.fillStyle = state.hasCar ? '#1E90FF' : '#FF69B4';
           ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
