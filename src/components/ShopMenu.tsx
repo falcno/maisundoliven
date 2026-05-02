@@ -16,7 +16,7 @@ const ShopMenu: React.FC<ShopMenuProps> = ({ playerData, onStart, onBuyUpgrade }
         <div className="shop-header-text">
           <h1>DİLŞAD'IN İNDİRİM KOŞUSU</h1>
           <div className="coupon-balance">
-            Kuponlar: <span className="highlight">{playerData.coupons}</span>
+            Trendyol Kuponları: <span className="highlight">{playerData.coupons}</span>
           </div>
         </div>
       </div>
